@@ -51,7 +51,7 @@ struct SpotlightParser
      * @param locale
      * @return
      */
-    static QUrl buildUrl(const QDateTime &dateTime, const QLocale &locale = QLocale::system());
+    static QUrl buildUrl();
 
     /**
      * @brief Parse reply and return image item as string

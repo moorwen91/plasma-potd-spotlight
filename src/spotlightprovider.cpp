@@ -41,9 +41,7 @@
 SpotlightProvider::SpotlightProvider(QObject *parent, const QVariantList &args)
     : PotdProvider(parent, args)
 {
-    auto dateTime = QDateTime::currentDateTime();
-    dateTime.setDate(date());
-    const auto url = SpotlightParser::buildUrl(dateTime);
+    const auto url = SpotlightParser::buildUrl();
 
     auto job = KIO::storedGet(url, KIO::NoReload, KIO::HideProgressInfo);
     connect(job, &KIO::StoredTransferJob::finished, this, &SpotlightProvider::pageRequestFinished);
@@ -102,32 +100,20 @@ QString SpotlightParser::getCountryLetters(const QLocale &locale)
     return locale.name().split('_').at(1).toLower();
 }
 
-QUrl SpotlightParser::buildUrl(const QDateTime &dateTime, const QLocale &locale)
+QUrl SpotlightParser::buildUrl()
 {
-    QUrl url(QLatin1Literal("https://arc.msn.com/v3/Delivery/Cache"));
+    QUrl url(QLatin1Literal("https://arc.msn.com/v3/Delivery/Placement"));
     QUrlQuery query;
-    // Purpose unknown
-    //    query.addQueryItem(QLatin1Literal("lo"), QLatin1Literal("80217"));
-    // Purpose unknown
-    //    query.addQueryItem(QLatin1Literal("rafb"), QLatin1Literal("0"));
-    // User agent
-    //    query.addQueryItem(QLatin1Literal("ua"), QLatin1Literal("WindowsShellClient"));
     // Purpose unknown, must be this value,
     query.addQueryItem(QLatin1Literal("pid"), QLatin1Literal("209567"));
     // Output format
     query.addQueryItem(QLatin1Literal("fmt"), QLatin1Literal("json"));
-    // Screen width in pixels
-    query.addQueryItem(QLatin1Literal("disphorzres"), QLatin1Literal("9999"));
-    // Screen height in pixels
-    query.addQueryItem(QLatin1Literal("dispvertres"), QLatin1Literal("9999"));
-    // Locale
-    query.addQueryItem(QLatin1Literal("pl"), locale.name().replace("_", "-"));
+    // Purpose unknown, must be this value,
+    query.addQueryItem(QLatin1Literal("cdm"), QLatin1Literal("1"));
     // Language
-    query.addQueryItem(QLatin1Literal("lc"), locale.name().replace("_", "-"));
+    query.addQueryItem(QLatin1Literal("lc"), QLatin1Literal("en,en-US"));
     // Country
-    query.addQueryItem(QLatin1Literal("ctry"), getCountryLetters(locale));
-    // Time
-    query.addQueryItem(QLatin1Literal("time"), dateTime.toUTC().toString(Qt::ISODate));
+    query.addQueryItem(QLatin1Literal("ctry"), QLatin1Literal("US"));
 
     url.setQuery(query);
 
